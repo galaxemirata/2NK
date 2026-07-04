@@ -34,7 +34,7 @@ const SignIn = ({ setUser }) => {
       formData.append("password", password);
 
       const response = await axios.post(
-        "http://127.0.0.1:5000/api/signin",
+        "https://collins.alwaysdata.net/api/signin",
         formData
       );
 
@@ -44,7 +44,6 @@ const SignIn = ({ setUser }) => {
         const existingUser =
           JSON.parse(localStorage.getItem("user")) || {};
 
-        // 🔥 SAFE USER MERGE (IMPORTANT FIX)
         const safeUser = {
           username: backendUser.username,
           email: backendUser.email,
@@ -58,7 +57,6 @@ const SignIn = ({ setUser }) => {
         localStorage.setItem("user", JSON.stringify(safeUser));
         localStorage.setItem("username", backendUser.username);
 
-        // 🔥 instant navbar update
         setUser(safeUser);
 
         setSuccess(
@@ -79,7 +77,7 @@ const SignIn = ({ setUser }) => {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Something went wrong"
+        "Something went wrong"
       );
     } finally {
       setLoading(false);

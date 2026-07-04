@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const fetchBookings = async () => {
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/bookings")
+      const res = await fetch("https://collins.alwaysdata.net/api/admin/bookings")
       const data = await res.json()
       setBookings(data)
 
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
   const fetchVehicles = async () => {
 
     try {
-      const res = await fetch("http://localhost:5000/api/vehicles")
+      const res = await fetch("https://collins.alwaysdata.net/api/vehicles")
       const data = await res.json()
       setVehicles(data)
 
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/admin/add_vehicle",
+        "https://collins.alwaysdata.net/api/admin/add_vehicle",
         {
           method: "POST",
           headers: {
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
     try {
 
       const res = await fetch(
-        `http://localhost:5000/api/admin/remove_vehicle/${id}`,
+        `https://collins.alwaysdata.net/api/admin/remove_vehicle/${id}`,
         {
           method: "DELETE"
         }

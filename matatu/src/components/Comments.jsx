@@ -11,12 +11,13 @@ const Comments = () => {
   const [comments, setComments] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const notifRef = useRef(null);
 
   // ================= LOAD COMMENTS =================
   const loadComments = () => {
-    fetch("http://localhost:5000/api/comments")
+    fetch("https://collins.alwaysdata.net/api/comments")
       .then((res) => res.json())
       .then((data) => setComments(data || []))
       .catch(console.log);
@@ -28,16 +29,18 @@ const Comments = () => {
 
   // ================= SUBMIT COMMENT =================
   const handleSubmit = () => {
-    if (!name.trim() || !comment.trim()) return;
+    if (!name.trim() || !comment.trim() || loading) return;
 
-    fetch("http://localhost:5000/api/comments", {
+    setLoading(true);
+
+    fetch("https://collins.alwaysdata.net/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         email: currentUser,
         comment,
-        imageUrl: storedUser?.profilePic || ""
+        imageUrl: storedUser?.profilePic || "",
       }),
     })
       .then((res) => res.json())
@@ -45,12 +48,15 @@ const Comments = () => {
         setComment("");
         loadComments();
       })
-      .catch(console.log);
+      .catch(console.log)
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   // ================= LIKE =================
   const handleLike = (item) => {
-    fetch("http://localhost:5000/api/like", {
+    fetch("https://collins.alwaysdata.net/api/like", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -67,7 +73,7 @@ const Comments = () => {
   const handleDelete = (id) => {
     if (!window.confirm("Delete this comment?")) return;
 
-    fetch(`http://localhost:5000/api/comments/${id}`, {
+    fetch(`https://collins.alwaysdata.net/api/comments/${id}`, {
       method: "DELETE",
     })
       .then(() => setComments((prev) => prev.filter((c) => c.id !== id)))
@@ -89,7 +95,8 @@ const Comments = () => {
       {/* FORM */}
       <div className="card p-3 mb-4">
         <input
-          className="form-control mb-2" id="commentownername"
+          className="form-control mb-2"
+          id="commentownername"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Name"
@@ -102,8 +109,23 @@ const Comments = () => {
           placeholder="Write comment..."
         />
 
-        <button className="btn btn-info" onClick={handleSubmit}>
-          Post
+        <button
+          className="btn btn-info"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Posting...
+            </>
+          ) : (
+            "Post"
+          )}
         </button>
       </div>
 
@@ -118,33 +140,34 @@ const Comments = () => {
         return (
           <div key={item.id} className="card p-3 mb-3" id="usercomments">
 
-<div style={{ display: "flex", gap: "12px" }}>
-  <img
-    src={
-      item.imageUrl ||
-      "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-    }
-    alt="profile"
-    style={{
-      width: "50px",
-      height: "50px",
-      borderRadius: "50%",
-      objectFit: "cover",
-    }}
-  />
+            <div style={{ display: "flex", gap: "12px" }}>
+              <img
+                src={
+                  item.imageUrl ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                alt="profile"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
 
-  <div>
-    <b id="commentowner">@{item.name}</b>
-    <p style={{ margin: 0 }}>{item.comment}</p>
-  </div>
-</div>
-
-
+              <div>
+                <b id="commentowner">@{item.name}</b>
+                <p style={{ margin: 0 }}>{item.comment}</p>
+              </div>
+            </div>
 
             <small className="text-start">{timeAgo(item.createdAt)}</small>
 
             {isAdmin && (
-              <button onClick={() => handleDelete(item.id)} style={{ color: "red" }}>
+              <button
+                onClick={() => handleDelete(item.id)}
+                style={{ color: "red" }}
+              >
                 Delete
               </button>
             )}

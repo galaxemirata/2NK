@@ -193,7 +193,7 @@ function App() {
               {!user ? (
                 <Link to="/signin" className="navlink text-info">Log In</Link>
               ) : (
-                <div ref={profileRef} style={{ position: "relative" }}>
+                <div ref={profileRef} style={{ position: "static" }}>
 
                   {user?.profilePic ? (
                     <img
@@ -229,19 +229,20 @@ function App() {
                     </div>
                   )}
 
-                  {showProfileMenu && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 55,
-                        right: 0,
-                        background: "black",
-                        padding: 10,
-                        borderRadius: 10,
-                        minWidth: 180,
-                        zIndex: 9999,
-                      }}
-                    >
+{showProfileMenu && (
+  <div
+    style={{
+      position: "fixed",
+      top: "200px",
+      right: "200px",
+      background: "black",
+      padding: "10px",
+      borderRadius: "10px",
+      minWidth: "220px",
+      boxShadow: "0 5px 20px rgba(0,0,0,.3)",
+      zIndex: 999999,
+    }}
+  >
                       <p className="text-info mb-2">{user.username}</p>
 
                       <button

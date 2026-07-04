@@ -27,7 +27,7 @@ const AdminSignIn = ({ setAdmin }) => {
             formData.append("password", password)
 
             const response = await axios.post(
-                "http://127.0.0.1:5000/api/adminsignin",
+                "https://collins.alwaysdata.net/api/adminsignin",
                 formData
             )
 

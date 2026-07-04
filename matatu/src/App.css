@@ -186,6 +186,9 @@
   background-color: black;
   position: relative;
   flex-wrap: wrap;
+
+  /* ONLY NECESSARY FIX */
+  overflow: visible;
 }
 
 .nav-left,
@@ -252,7 +255,7 @@
   color: gainsboro;
 }
 
-/* MOBILE FIX (IMPORTANT FIX HERE) */
+/* MOBILE FIX */
 
 @media (max-width: 768px) {
 
@@ -272,7 +275,6 @@
     letter-spacing: 2px;
   }
 
-  /* FIXED DROPDOWN (NO OVERFLOW) */
   .nav-right {
     position: absolute;
     top: 100%;
@@ -291,7 +293,11 @@
     padding: 15px;
 
     z-index: 9999;
-    overflow: hidden;
+
+    /* ONLY NECESSARY FIX */
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: visible;
   }
 
   .nav-right.show-menu {
@@ -307,9 +313,11 @@
 }
 
 /* comment */
-#commentowner{
+
+#commentowner {
   color: cyan;
 }
-#commentownername{
+
+#commentownername {
   color: deeppink;
 }

@@ -25,7 +25,7 @@ const Mpesa = () => {
 
     const fetchPrice = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/vehicles");
+        const res = await fetch("https://collins.alwaysdata.net/api/vehicles");
         const data = await res.json();
 
         const found = data.find(
@@ -92,7 +92,7 @@ const Mpesa = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/mpesa_payment",
+        "https://collins.alwaysdata.net/api/mpesa_payment",
         {
           method: "POST",
           headers: {

@@ -812,6 +812,9 @@ def mark_read(id):
     return jsonify({"message": "updated"})
 
 
+
+
+
 # RUN APP
 
 app.run(debug=True)

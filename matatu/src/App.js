@@ -56,6 +56,7 @@ function App() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [uploadingProfile, setUploadingProfile] = useState(false);
 
   const menuRef = useRef(null);
   const profileRef = useRef(null);
@@ -87,48 +88,82 @@ function App() {
     window.location.href = "/signin";
   };
 
-  const changeProfilePicture = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const changeProfilePicture = async (e) => {
+  const file = e.target.files[0];
 
-    const reader = new FileReader();
+  if (!file) return;
 
-    reader.onload = async () => {
+  // Allow only image files
+  if (!file.type.startsWith("image/")) {
+    alert("Please select a valid image.");
+    return;
+  }
+
+  // Limit image size to 5MB
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image must be less than 5MB.");
+    return;
+  }
+
+  setUploadingProfile(true);
+
+  const reader = new FileReader();
+
+  reader.onload = async () => {
+    try {
+      const response = await axios.post(
+        "https://collins.alwaysdata.net/api/update-profile-pic",
+        {
+          email: user.email,
+          profilePic: reader.result,
+        }
+      );
+
+
+
       const updatedUser = {
         ...user,
-        profilePic: reader.result,
+        profilePic: response.data.profilePic,
       };
 
-      await axios.post("http://127.0.0.1:5000/api/update-profile-pic", {
-        email: user.email,
-        profilePic: reader.result,
-      });
-
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      // Update React state
       setUser(updatedUser);
 
-      const savedComments =
+      // Update local storage
+      localStorage.setItem(
+        "user",
+        JSON.stringify(updatedUser)
+      );
+
+      // Update comments
+      const comments =
         JSON.parse(localStorage.getItem("comments")) || [];
 
-      const updatedComments = savedComments.map((comment) =>
+      const updatedComments = comments.map((comment) =>
         comment.owner === updatedUser.email
-          ? { ...comment, imageUrl: updatedUser.profilePic }
+          ? {
+              ...comment,
+              imageUrl: updatedUser.profilePic,
+            }
           : comment
       );
 
-      localStorage.setItem("comments", JSON.stringify(updatedComments));
+      localStorage.setItem(
+        "comments",
+        JSON.stringify(updatedComments)
+      );
 
-      const savedNotifications =
+      // Update notifications
+      const notifications =
         JSON.parse(localStorage.getItem("notifications")) || [];
 
-      const updatedNotifications = savedNotifications.map(
-        (notification) =>
-          notification.from === updatedUser.email
-            ? {
-                ...notification,
-                fromProfilePic: updatedUser.profilePic,
-              }
-            : notification
+      const updatedNotifications = notifications.map((notification) =>
+        notification.from === updatedUser.email
+          ? {
+              ...notification,
+              fromProfilePic: updatedUser.profilePic,
+            }
+          : notification
       );
 
       localStorage.setItem(
@@ -137,11 +172,27 @@ function App() {
       );
 
       setShowProfileMenu(false);
-    };
 
-    reader.readAsDataURL(file);
+      alert("✅ Profile picture updated successfully!");
+
+    } catch (error) {
+      console.error(error);
+
+      if (error.response) {
+        alert(error.response.data.message || "Server error.");
+      } else {
+        alert("Unable to connect to the server.");
+      }
+    } finally {
+      setUploadingProfile(false);
+
+      // Allows selecting the same image again
+      e.target.value = "";
+    }
   };
 
+  reader.readAsDataURL(file);
+};
   return (
     <div className="App">
       <Router>
@@ -243,16 +294,42 @@ function App() {
       zIndex: 999999,
     }}
   >
+    
+
+    <img
+                      src={user.profilePic}
+                      alt="Profile"
+                      onClick={() => setShowProfileMenu(!showProfileMenu)}
+                      style={{
+                        width: 45,
+                        height: 45,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                        border: "2px solid red",
+                      }}
+                    />
                       <p className="text-info mb-2">{user.username}</p>
 
-                      <button
-                        className="btn btn-info btn-sm w-100 mb-2"
-                        onClick={() =>
-                          document.getElementById("profile-upload").click()
-                        }
-                      >
-                        Change Profile Picture
-                      </button>
+<button
+  className="btn btn-info btn-sm w-100 mb-2"
+  disabled={uploadingProfile}
+  onClick={() =>
+    document.getElementById("profile-upload").click()
+  }
+>
+  {uploadingProfile ? (
+    <>
+      <span
+        className="spinner-border spinner-border-sm me-2"
+        role="status"
+      ></span>
+      Uploading...
+    </>
+  ) : (
+    "Change Profile Picture"
+  )}
+</button>
 
                       <button
                         onClick={logout}

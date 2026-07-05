@@ -11,7 +11,7 @@ const NanyukiMombasa = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/vehicles")
+    fetch("https://collins.alwaysdata.net/api/vehicles")
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(
@@ -41,7 +41,7 @@ const NanyukiMombasa = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/paid_seats/${vehicle.number_plate}`
+        `https://collins.alwaysdata.net/api/paid_seats/${vehicle.number_plate}`
       );
 
       const data = await res.json();
@@ -103,7 +103,7 @@ const NanyukiMombasa = () => {
 
     try {
       const latest = await fetch(
-        `http://localhost:5000/api/paid_seats/${vehicle.number_plate}`
+        `https://collins.alwaysdata.net/api/paid_seats/${vehicle.number_plate}`
       );
 
       const latestPaidSeats = await latest.json();

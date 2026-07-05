@@ -21,7 +21,7 @@ const SeatLayout = ({ vehicleId }) => {
     try {
 
       const response = await fetch(
-        `http://localhost:5000/api/booked_seats/${vehicleId}`
+        `https://collins.alwaysdata.net/api/booked_seats/${vehicleId}`
       )
 
       const data = await response.json()

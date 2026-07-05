@@ -12,7 +12,7 @@ const IsioloNanyuki = () => {
 
   // ================= LOAD VEHICLES =================
   useEffect(() => {
-    fetch("http://localhost:5000/api/vehicles")
+    fetch("https://collins.alwaysdata.net/api/vehicles")
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(
@@ -45,7 +45,7 @@ const IsioloNanyuki = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/paid_seats/${vehicle.number_plate}`
+        `https://collins.alwaysdata.net/api/paid_seats/${vehicle.number_plate}`
       );
 
       const data = await res.json();
@@ -112,7 +112,7 @@ const IsioloNanyuki = () => {
 
     try {
       const latest = await fetch(
-        `http://localhost:5000/api/paid_seats/${vehicle.number_plate}`
+        `https://collins.alwaysdata.net/api/paid_seats/${vehicle.number_plate}`
       );
 
       const latestPaidSeats = await latest.json();

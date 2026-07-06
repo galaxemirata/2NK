@@ -12,15 +12,21 @@ const Comments = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [commentsLoading, setCommentsLoading] = useState(true);
 
   const notifRef = useRef(null);
 
   // ================= LOAD COMMENTS =================
   const loadComments = () => {
+    setCommentsLoading(true);
+
     fetch("https://collins.alwaysdata.net/api/comments")
       .then((res) => res.json())
       .then((data) => setComments(data || []))
-      .catch(console.log);
+      .catch(console.log)
+      .finally(() => {
+        setCommentsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -130,50 +136,64 @@ const Comments = () => {
       </div>
 
       {/* COMMENTS */}
-      {comments.map((item) => {
-        const likes = Array.isArray(item.likes)
-          ? item.likes
-          : JSON.parse(item.likes || "[]");
-
-        const isLiked = likes.includes(currentUser);
-
-        return (
-          <div key={item.id} className="card p-3 mb-3" id="usercomments">
-
-            <div style={{ display: "flex", gap: "12px" }}>
-              <img
-                src={
-                  item.imageUrl ||
-                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                }
-                alt="profile"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
-
-              <div>
-                <b id="commentowner">@{item.name}</b>
-                <p style={{ margin: 0 }}>{item.comment}</p>
-              </div>
-            </div>
-
-            <small className="text-start">{timeAgo(item.createdAt)}</small>
-
-            {isAdmin && (
-              <button
-                onClick={() => handleDelete(item.id)}
-                style={{ color: "red" }}
-              >
-                Delete
-              </button>
-            )}
+      {commentsLoading ? (
+        <div className="text-center my-5">
+          <div
+            className="spinner-border text-danger"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
           </div>
-        );
-      })}
+
+          <p className="mt-3 text-muted">Loading comments...</p>
+        </div>
+      ) : (
+        comments.map((item) => {
+          const likes = Array.isArray(item.likes)
+            ? item.likes
+            : JSON.parse(item.likes || "[]");
+
+          const isLiked = likes.includes(currentUser);
+
+          return (
+            <div key={item.id} className="card p-3 mb-3" id="usercomments">
+
+              <div style={{ display: "flex", gap: "12px" }}>
+                <img
+                  src={
+                    item.imageUrl ||
+                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  }
+                  alt="profile"
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+
+                <div>
+                  <b id="commentowner">@{item.name}</b>
+                  <p style={{ margin: 0 }}>{item.comment}</p>
+                </div>
+              </div>
+
+              <small className="text-start">{timeAgo(item.createdAt)}</small>
+
+              {isAdmin && (
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  style={{ color: "red" }}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };
